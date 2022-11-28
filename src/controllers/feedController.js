@@ -1,9 +1,12 @@
 const axios = require("axios");
 const qs = require("qs");
 
+
+var HASHTAGS = [];
+
 const fetchTweets = async (req, res, next) => {
 	try {
-		const hashtags = ["#queryworksfine12"];
+		const hashtags = HASHTAGS.length !== 0? HASHTAGS : ["#queryworksfine12"];
 		var filter = "";
 
 		hashtags.forEach((tag) => {
@@ -13,7 +16,6 @@ const fetchTweets = async (req, res, next) => {
 				filter = filter.concat(" OR ", tag);
 			}
 		});
-		console.log(filter);
 		const query = qs.stringify({ query: `(${filter})` });
 		const reqconfig = {
 			method: "get",
@@ -54,6 +56,17 @@ const fetchTweets = async (req, res, next) => {
 	}
 };
 
+const setHastags = async(req, res, next) => {
+	try{
+		const {list} = req.body; 
+		HASHTAGS = list;
+		return res.status(200).send({ status: "success" });
+	}catch (err) {
+		console.log(err);
+		res.status(500).send(err.msg);
+	}
+}
+
 const fetchTweetsRaw = async (req, res, next) => {
 	try {
 		const reqconfig = {
@@ -79,4 +92,5 @@ const fetchTweetsRaw = async (req, res, next) => {
 module.exports = {
 	fetchTweets,
 	fetchTweetsRaw,
+	setHastags
 };
